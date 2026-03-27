@@ -11,7 +11,8 @@ langchain-ollama==0.2.1
 langchain-chroma==0.1.4
 
 # Vector Store
-chromadb==0.5.20
+chromadb==0.5.3
+
 
 # Database
 sqlalchemy==2.0.36

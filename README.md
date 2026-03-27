@@ -42,59 +42,7 @@
 ├── Tailwind CSS 3         样式框架
 ├── Pinia                  状态管理
 └── marked                 Markdown 渲染
-```
 
----
-
-## 📁 项目结构
-
-```
-rag-system/
-├── backend/
-│   ├── app/
-│   │   ├── api/
-│   │   │   ├── kb.py          # 知识库 CRUD API
-│   │   │   ├── document.py    # 文档上传/管理 API
-│   │   │   ├── chat.py        # 对话/流式问答 API
-│   │   │   └── system.py      # 系统健康检查
-│   │   ├── core/
-│   │   │   ├── config.py      # 配置管理 (.env)
-│   │   │   └── database.py    # SQLAlchemy 连接
-│   │   ├── models/
-│   │   │   └── __init__.py    # ORM 模型定义
-│   │   ├── schemas/
-│   │   │   └── __init__.py    # Pydantic Schema
-│   │   └── services/
-│   │       ├── parser.py      # 文档解析（含OCR）
-│   │       ├── vector_store.py # ChromaDB 向量操作
-│   │       ├── rag.py         # RAG 推理链
-│   │       └── document.py    # 文档处理编排
-│   ├── main.py                # FastAPI 入口
-│   ├── requirements.txt
-│   ├── .env                   # 环境变量配置
-│   └── start.sh
-├── frontend/
-│   ├── src/
-│   │   ├── api/index.js       # Axios 封装
-│   │   ├── assets/main.css    # Tailwind + 全局样式
-│   │   ├── components/
-│   │   │   ├── Modal.vue
-│   │   │   └── Spinner.vue
-│   │   ├── router/index.js
-│   │   ├── stores/app.js      # Pinia Store
-│   │   ├── views/
-│   │   │   ├── KbList.vue     # 知识库列表
-│   │   │   ├── KbDetail.vue   # 知识库详情
-│   │   │   ├── DocList.vue    # 文档管理
-│   │   │   └── ChatView.vue   # 流式对话
-│   │   ├── App.vue
-│   │   └── main.js
-│   ├── index.html
-│   ├── package.json
-│   ├── vite.config.js
-│   └── tailwind.config.js
-└── init_db.sql                # MySQL 建表脚本
-```
 
 ---
 

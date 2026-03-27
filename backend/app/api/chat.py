@@ -104,6 +104,9 @@ async def stream_message(body: ChatRequest, db: Session = Depends(get_db)):
     db.add(user_msg)
     db.commit()
 
+    history = _get_history(db, conv.id)
+    kb_id = body.kb_id  # 提前取出，避免生成器里访问 ORM 对象
+
     async def event_generator():
         import json
         full_answer = ""
@@ -128,16 +131,25 @@ async def stream_message(body: ChatRequest, db: Session = Depends(get_db)):
             logger.error(f"Stream error: {e}")
             yield f"data: {json.dumps({'type': 'error', 'data': str(e)})}\n\n"
         finally:
-            # 保存 AI 回复
+            # 生成器结束后用新 Session 保存 AI 回复，避免原 Session 已关闭的问题
             if full_answer:
-                ai_msg = Message(
-                    conv_id=conv.id, role="assistant",
-                    content=full_answer, sources=final_sources
-                )
-                db.add(ai_msg)
-                db.commit()
+                from app.core.database import SessionLocal
+                new_db = SessionLocal()
+                try:
+                    ai_msg = Message(
+                        conv_id=conv.id,
+                        role="assistant",
+                        content=full_answer,
+                        sources=final_sources,
+                    )
+                    new_db.add(ai_msg)
+                    new_db.commit()
+                except Exception as e:
+                    logger.error(f"Save AI message error: {e}")
+                    new_db.rollback()
+                finally:
+                    new_db.close()
 
-        # 返回 conv_id
         yield f"data: {json.dumps({'type': 'conv_id', 'data': conv.id})}\n\n"
 
     return StreamingResponse(

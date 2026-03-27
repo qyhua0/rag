@@ -11,6 +11,7 @@ build/
 # Environment
 .env.local
 .env.production
+backend/.env
 
 # Data / uploads
 backend/uploads/
@@ -31,5 +32,5 @@ frontend/.vite/
 # Logs
 *.log
 
-#config
-backend/.env
+backend/dev.md
+
