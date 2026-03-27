@@ -30,3 +30,6 @@ frontend/.vite/
 
 # Logs
 *.log
+
+#config
+backend/.env
