@@ -6,6 +6,16 @@
 
 ---
 
+
+![rag_主界面](images/main.png)
+
+![rag_软件库](images/main2.png)
+
+![rag_文档管理](images/main3.png)
+
+![rag_对话](images/main4.png)
+
+
 ## ✨ 核心特性
 
 | 功能 | 说明 |

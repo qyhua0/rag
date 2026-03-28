@@ -62,23 +62,22 @@ class VectorStoreService:
         )
 
     def add_documents(
-        self,
-        kb_id: int,
-        documents: List[Document],
-        doc_id: int,
-        filename: str,
+            self,
+            kb_id: int,
+            documents: List[Document],
+            doc_id: int,
+            filename: str,
     ) -> int:
-        """将文档分块后存入向量库，返回分块数量"""
         splitter = self.text_splitter()
         chunks = splitter.split_documents(documents)
 
-        # 添加元数据
         for i, chunk in enumerate(chunks):
+            # 所有 metadata 值统一用字符串类型，避免 ChromaDB filter 类型不匹配
             chunk.metadata.update({
                 "doc_id": str(doc_id),
                 "kb_id": str(kb_id),
                 "filename": filename,
-                "chunk_index": i,
+                "chunk_index": str(i),
             })
 
         if not chunks:
@@ -86,29 +85,34 @@ class VectorStoreService:
             return 0
 
         store = self.get_store(kb_id)
-        # 批量添加，避免单次过多
+        # 每个 chunk 必须有唯一 id，否则 ChromaDB 会用内容 hash 去重，导致重复内容被覆盖
+        import uuid
         batch_size = 50
         for i in range(0, len(chunks), batch_size):
             batch = chunks[i:i + batch_size]
-            store.add_documents(batch)
+            ids = [str(uuid.uuid4()) for _ in batch]
+            store.add_documents(batch, ids=ids)
 
         logger.info(f"Added {len(chunks)} chunks to kb={kb_id}, doc={doc_id}")
         return len(chunks)
 
     def similarity_search(
-        self,
-        kb_id: int,
-        query: str,
-        k: int = None,
-        filter_doc_ids: Optional[List[int]] = None,
+            self,
+            kb_id: int,
+            query: str,
+            k: int = None,
+            filter_doc_ids: Optional[List[int]] = None,
     ) -> List[Tuple[Document, float]]:
-        """相似度搜索，返回 (document, score) 列表"""
         k = k or settings.TOP_K
         store = self.get_store(kb_id)
 
+        # 只在明确指定 doc_id 过滤时才加 where，否则搜全库
         where_filter = None
         if filter_doc_ids:
-            where_filter = {"doc_id": {"$in": [str(d) for d in filter_doc_ids]}}
+            if len(filter_doc_ids) == 1:
+                where_filter = {"doc_id": str(filter_doc_ids[0])}
+            else:
+                where_filter = {"doc_id": {"$in": [str(d) for d in filter_doc_ids]}}
 
         try:
             results = store.similarity_search_with_score(
