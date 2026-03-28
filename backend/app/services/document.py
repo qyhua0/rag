@@ -48,7 +48,15 @@ class DocumentService:
             documents, meta = parser.parse(doc.file_path, doc.filename)
 
             # 2. 向量化存储
-            chunk_count = vector_service.add_documents(
+            # chunk_count = vector_service.add_documents(
+            #     kb_id=doc.kb_id,
+            #     documents=documents,
+            #     doc_id=doc.id,
+            #     filename=doc.filename,
+            # )
+
+            #  向量化存储（异步）：
+            chunk_count = await vector_service.add_documents_async(
                 kb_id=doc.kb_id,
                 documents=documents,
                 doc_id=doc.id,

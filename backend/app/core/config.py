@@ -4,7 +4,6 @@ Package: top.modelx.rag
 Author: hua
 """
 from pydantic_settings import BaseSettings
-from pydantic import field_validator
 from typing import List
 import os
 
@@ -42,7 +41,25 @@ class Settings(BaseSettings):
     # RAG Config
     CHUNK_SIZE: int = 1000
     CHUNK_OVERLAP: int = 200
-    TOP_K: int = 5
+    TOP_K: int = 8                        # 向量召回数量
+    RERANK_TOP_K: int = 5                 # 重排后保留数量
+    RETRIEVAL_SCORE_THRESHOLD: float = 0.1 # 相似度最低阈值（过滤噪声）
+    MAX_CONTEXT_LENGTH: int = 6000        # 最大 context 字符数
+
+    # Cache
+    QUERY_CACHE_TTL: int = 300            # 查询缓存 TTL（秒）
+    QUERY_CACHE_MAX_SIZE: int = 500       # 最大缓存条数
+    EMBEDDING_CACHE_MAX_SIZE: int = 2000  # Embedding 缓存最大条数
+
+    # Async Worker
+    EMBEDDING_CONCURRENCY: int = 3        # 并发 embedding 数量
+    EMBED_BATCH_SIZE: int = 20            # 每批 embedding 文本数
+
+    # Logging
+    LOG_DIR: str = "./logs"
+    LOG_RETRIEVAL: bool = True            # 开启检索日志
+    LOG_PROMPT: bool = True               # 开启 prompt 日志
+    LOG_LEVEL: str = "INFO"
 
     @property
     def allowed_extensions_list(self) -> List[str]:
@@ -51,6 +68,7 @@ class Settings(BaseSettings):
     def ensure_dirs(self):
         os.makedirs(self.UPLOAD_DIR, exist_ok=True)
         os.makedirs(self.CHROMA_PERSIST_DIR, exist_ok=True)
+        os.makedirs(self.LOG_DIR, exist_ok=True)
 
     class Config:
         env_file = ".env"

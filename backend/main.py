@@ -14,6 +14,7 @@ import os
 from app.core.config import settings
 from app.core.database import init_db
 from app.api import kb, document, chat, system
+from app.services.retrieval_log import setup_rag_loggers
 
 # 配置日志
 logger.remove()
@@ -25,11 +26,14 @@ logger.add("logs/app.log", rotation="10 MB", retention="7 days", level="INFO")
 async def lifespan(app: FastAPI):
     logger.info("🚀 Starting RAG System...")
     init_db()
+    setup_rag_loggers()          # ← 新增
     logger.info(f"✅ Database initialized")
     logger.info(f"📦 LLM Model: {settings.OLLAMA_LLM_MODEL}")
     logger.info(f"🔍 Embedding Model: {settings.OLLAMA_EMBEDDING_MODEL}")
     yield
-    logger.info("👋 Shutting down RAG System")
+    logger.info("👋 Shutting down")
+
+
 
 
 app = FastAPI(
@@ -73,6 +77,7 @@ async def root():
         "author": "hua",
         "package": "top.modelx.rag",
     }
+
 
 
 if __name__ == "__main__":
