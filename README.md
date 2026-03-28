@@ -86,13 +86,7 @@ ollama pull qwen2.5:7b
 # ollama pull qwen2.5:14b
 ```
 
-### 3. 初始化 MySQL 数据库
-
-```bash
-mysql -u root -p < init_db.sql
-```
-
-### 4. 配置后端环境变量
+### 3. 配置后端环境变量
 
 编辑 `backend/.env`：
 
@@ -114,7 +108,7 @@ CHUNK_OVERLAP=200
 TOP_K=5
 ```
 
-### 5. 启动后端
+### 4. 启动后端
 
 ```bash
 cd backend
@@ -126,7 +120,7 @@ pip install -r requirements.txt
 uvicorn main:app --reload --port 8000
 ```
 
-### 6. 启动前端
+### 5. 启动前端
 
 ```bash
 cd frontend
@@ -136,7 +130,7 @@ chmod +x start.sh
 npm install && npm run dev
 ```
 
-### 7. 访问系统
+### 6. 访问系统
 
 | 地址 | 说明 |
 |------|------|
@@ -235,4 +229,4 @@ curl -X POST http://localhost:8000/api/chat/send \
 
 ## 📄 License
 
-MIT License — top.modelx.rag © hua
+MIT License — www.modelx.top © hua
